@@ -42,9 +42,9 @@ class ExampleSpider(scrapy.Spider):
         print(items)
         self.plot_3d_color_scatter(items)
 
-            # yield Request(url=urljoin(response.url, str(link)),
-            #               callback=self.parse_genre_site,
-            #               meta={"item": item})
+        # yield Request(url=urljoin(response.url, str(link)),
+        #               callback=self.parse_genre_site,
+        #               meta={"item": item})
 
     def parse_genre_site(self, response):
         x = response.meta['item']
@@ -55,49 +55,61 @@ class ExampleSpider(scrapy.Spider):
         return tuple(int(stripped[i:i + 2], 16) for i in (0, 2, 4))
 
     def plot_3d_color_scatter(self, items_colors):
-        x, y, z = np.random.multivariate_normal(np.array([0, 0, 0]), np.eye(3), 200).transpose()
-        trace1 = go.Scatter3d(
-            x=x,
-            y=y,
-            z=z,
-            mode='markers',
-            marker=dict(
-                size=12,
-                line=dict(
-                    color='rgba(217, 217, 217, 0.14)',
-                    width=0.5
-                ),
-                opacity=0.8
-            )
-        )
+        pass
 
-        x2, y2, z2 = np.random.multivariate_normal(np.array([0, 0, 0]), np.eye(3), 200).transpose()
-        trace2 = go.Scatter3d(
-            x=x2,
-            y=y2,
-            z=z2,
-            mode='markers',
-            marker=dict(
-                color='rgb(127, 127, 127)',
-                size=12,
-                symbol='circle',
-                line=dict(
-                    color='rgb(204, 204, 204)',
-                    width=1
-                ),
-                opacity=0.9
-            )
-        )
-        data = [trace1, trace2]
-        layout = go.Layout(
-            margin=dict(
-                l=0,
-                r=0,
-                b=0,
-                t=0
-            )
-        )
-        fig = go.Figure(data=data, layout=layout)
-        plotly.offline.plot(fig, auto_open=True)
 
-        # py.plotly.offline.plot(*yourplotname *, filename='3D color scatter.html')
+x, y, z = np.random.multivariate_normal(np.array([0, 0, 0]), np.eye(3), 200).transpose()
+print(x)
+trace1 = go.Scatter3d(
+    x=x,
+    y=y,
+    z=z,
+    mode='markers',
+    marker=dict(
+        size=12,
+        line=dict(
+            color='rgba(217, 217, 217, 0.14)',
+            width=0.5
+        ),
+        opacity=0.8
+    )
+)
+
+x2, y2, z2 = np.random.multivariate_normal(np.array([0, 0, 0]), np.eye(3), 200).transpose()
+trace2 = go.Scatter3d(
+    x=x2,
+    y=y2,
+    z=z2,
+    text=x2,
+    mode='markers',
+    marker=dict(
+        color='rgb(127, 127, 127)',
+        size=12,
+        symbol='circle',
+        line=dict(
+            color='rgb(204, 204, 204)',
+            width=1
+        ),
+        opacity=0.9
+    )
+)
+data = [trace1, trace2]
+layout = go.Layout(
+    title='Planets!',
+    scene=dict(xaxis=dict(title='Red',
+                          titlefont=dict(color='Black')),
+               yaxis=dict(title='Green',
+                          titlefont=dict(color='Black')),
+               zaxis=dict(title='Blue',
+                          titlefont=dict(color='Black')),
+               bgcolor='rgb(255, 255, 255)'
+               ),
+    margin=dict(
+        l=0,
+        r=0,
+        b=0,
+        t=0
+    )
+)
+fig = go.Figure(data=data, layout=layout)
+plotly.offline.plot(fig, auto_open=True)
