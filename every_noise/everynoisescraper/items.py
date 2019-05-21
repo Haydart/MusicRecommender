@@ -1,6 +1,12 @@
 import scrapy
 
 
-class EveryNoiseGenreLink(scrapy.Item):
-    genre_name = scrapy.Field()
-    genre_link = scrapy.Field()
+class EveryNoiseGenreItem(scrapy.Item):
+    name = scrapy.Field()
+    link = scrapy.Field()
+    r = scrapy.Field()
+    g = scrapy.Field()
+    b = scrapy.Field()
+    canvas_x = scrapy.Field()
+    canvas_y = scrapy.Field()
+    font_size = scrapy.Field()
