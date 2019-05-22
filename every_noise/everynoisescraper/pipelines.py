@@ -18,7 +18,13 @@ class EveryNoisePipeline(object):
 
     def open_spider(self, spider):
         self.genre_exporter = CsvItemExporter(file=open('genres_output.csv', 'wb'))
+        self.genre_exporter.fields_to_export = ['name', 'r', 'g', 'b', 'canvas_x', 'canvas_y', 'font_size', 'link']
+        self.genre_exporter.start_exporting()
+
         self.artist_exporter = CsvItemExporter(file=open('artists_output.csv', 'wb'))
+        self.artist_exporter.fields_to_export = ['name', 'genre', 'spotify_artist_id', 'r', 'g', 'b', 'canvas_x',
+                                                 'canvas_y', 'font_size']
+        self.genre_exporter.start_exporting()
 
     def close_spider(self, spider):
         self.genre_exporter.finish_exporting()
