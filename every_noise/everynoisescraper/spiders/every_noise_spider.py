@@ -2,7 +2,7 @@ from urllib.parse import urlparse, urljoin
 import plotly
 import scrapy
 from scrapy import Request
-from ..items import EveryNoiseGenreItem
+from ..items import EveryNoiseGenreItem, EveryNoiseArtistItem
 import plotly.graph_objs as go
 import numpy as np
 
@@ -14,8 +14,6 @@ class ExampleSpider(scrapy.Spider):
     genre_index = 0
 
     def parse(self, response):
-        items = []
-
         for index, container in enumerate(response.xpath('//div[@class="genre scanme"]'), 1):
             name = container.xpath('./text()').extract()[0]
             link = container.xpath('./a[@class="navlink"]/@href').extract()[0]
@@ -24,7 +22,7 @@ class ExampleSpider(scrapy.Spider):
             canvas_x = style_string.split('left: ')[-1].split('px;')[0]
             canvas_y = style_string.split('top: ')[-1].split('px;')[0]
 
-            font_size = canvas_y = style_string.split('font-size: ')[-1].split('%')[0]
+            font_size = style_string.split('font-size: ')[-1].split('%')[0]
 
             color_string = style_string.split('color: #')[-1].split('px;')[0]
             color_tuple = self.extract_rgb(color_string)
@@ -39,18 +37,26 @@ class ExampleSpider(scrapy.Spider):
             item['canvas_y'] = canvas_y
             item['font_size'] = font_size
 
-            items.append(item)
-
             yield Request(url=urljoin(response.url, str(link)),
                           callback=self.parse_genre_site,
                           meta={"item": item, "index": index})
+
+            yield item
         # self.plot_3d_color_scatter(items)
 
     def parse_genre_site(self, response):
+        genre_name = response.meta["item"]["name"]
         self.genre_index += 1
-        print(f'Processing genre {self.genre_index} - {response.meta["item"]["name"]}')
-        x = response.meta['item']
-        pass
+        print(f'Processing genre {self.genre_index} - {genre_name}')
+
+        for index, container in enumerate(response.xpath('//div[@class="genre scanme"]'), 1):
+            name = container.xpath('./text()').extract()[0]
+
+            item = EveryNoiseArtistItem()
+            item['name'] = name
+            item['genre'] = genre_name
+
+            yield item
 
     def extract_rgb(self, hex_color):
         stripped = hex_color.lstrip('#')
