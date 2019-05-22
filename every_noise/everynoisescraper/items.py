@@ -15,3 +15,10 @@ class EveryNoiseGenreItem(Item):
 class EveryNoiseArtistItem(Item):
     name = Field()
     genre = Field()
+    spotify_artist_id = Field()
+    r = Field()
+    g = Field()
+    b = Field()
+    canvas_x = Field()
+    canvas_y = Field()
+    font_size = Field()
