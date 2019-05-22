@@ -51,10 +51,27 @@ class ExampleSpider(scrapy.Spider):
 
         for index, container in enumerate(response.xpath('//div[@class="genre scanme"]'), 1):
             name = container.xpath('./text()').extract()[0]
+            spotify_artist_id = container.xpath('./a[@class="navlink"]/@href').extract()[0]
+
+            style_string = container.xpath('./@style').extract()[0]
+            canvas_x = style_string.split('left: ')[-1].split('px;')[0]
+            canvas_y = style_string.split('top: ')[-1].split('px;')[0]
+
+            font_size = style_string.split('font-size: ')[-1].split('%')[0]
+
+            color_string = style_string.split('color: #')[-1].split('px;')[0]
+            color_tuple = self.extract_rgb(color_string)
 
             item = EveryNoiseArtistItem()
             item['name'] = name
             item['genre'] = genre_name
+            item['spotify_artist_id'] = spotify_artist_id
+            item['r'] = color_tuple[0]
+            item['g'] = color_tuple[1]
+            item['b'] = color_tuple[2]
+            item['canvas_x'] = canvas_x
+            item['canvas_y'] = canvas_y
+            item['font_size'] = font_size
 
             yield item
 
