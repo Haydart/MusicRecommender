@@ -1,11 +1,19 @@
-# -*- coding: utf-8 -*-
-
-# Define your item pipelines here
-#
-# Don't forget to add your pipeline to the ITEM_PIPELINES setting
-# See: https://doc.scrapy.org/en/latest/topics/item-pipeline.html
+from scrapy.exporters import CsvItemExporter
+from .items import EveryNoiseGenreItem, EveryNoiseArtistItem
 
 
-class EverynoisescraperPipeline(object):
+class EveryNoisePipeline(object):
+
     def process_item(self, item, spider):
+        if isinstance(item, EveryNoiseGenreItem):
+            return self.handle_genre_item(item, spider)
+        if isinstance(item, EveryNoiseArtistItem):
+            return self.handle_artist_item(item, spider)
+
+    def handle_genre_item(self, item, spider):
+        print("HANDLING GENRE ITEM")
+        return item
+
+    def handle_artist_item(self, item, spider):
+        print("ARTIST")
         return item
