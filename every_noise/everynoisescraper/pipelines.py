@@ -1,3 +1,4 @@
+from scrapy import signals
 from scrapy.exporters import CsvItemExporter
 from .items import EveryNoiseGenreItem, EveryNoiseArtistItem
 
@@ -7,6 +8,13 @@ class EveryNoisePipeline(object):
     def __init__(self):
         self.genre_exporter = None
         self.artist_exporter = None
+
+    @classmethod
+    def from_crawler(cls, crawler):
+        pipeline = cls()
+        crawler.signals.connect(pipeline.open_spider, signals.spider_opened)
+        crawler.signals.connect(pipeline.close_spider, signals.spider_closed)
+        return pipeline
 
     def open_spider(self, spider):
         self.genre_exporter = CsvItemExporter(file=open('genres_output.csv', 'wb'))
