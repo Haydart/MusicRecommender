@@ -4,7 +4,6 @@ import scrapy
 from scrapy import Request
 from ..items import EveryNoiseGenreItem, EveryNoiseArtistItem
 import plotly.graph_objs as go
-import numpy as np
 
 
 class ExampleSpider(scrapy.Spider):
@@ -14,6 +13,7 @@ class ExampleSpider(scrapy.Spider):
     genre_index = 0
 
     def parse(self, response):
+        items = []
         for index, container in enumerate(response.xpath('//div[@class="genre scanme"]'), 1):
             name = container.xpath('./text()').extract()[0]
             link = container.xpath('./a[@class="navlink"]/@href').extract()[0]
@@ -37,12 +37,14 @@ class ExampleSpider(scrapy.Spider):
             item['canvas_y'] = canvas_y
             item['font_size'] = font_size
 
-            yield Request(url=urljoin(response.url, str(link)),
-                          callback=self.parse_genre_site,
-                          meta={"item": item, "index": index})
+            items.append(item)
+
+            # yield Request(url=urljoin(response.url, str(link)),
+            #               callback=self.parse_genre_site,
+            #               meta={"item": item, "index": index})
 
             yield item
-        # self.plot_3d_color_scatter(items)
+        self.plot_3d_color_scatter(items)
 
     def parse_genre_site(self, response):
         genre_name = response.meta["item"]["name"]
