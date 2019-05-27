@@ -57,7 +57,7 @@ class SpotifyClient:
 
         albums = [(album['name'], album['uri']) for album in response['albums']]
         tracks = [[(track['name'], track['uri']) for track in album['tracks']['items']] for album in response['albums']]
-        return albums, tracks
+        return tracks
 
     def fetch_audio_features(self, track_uri_list):
         pass
