@@ -18,7 +18,6 @@ class SpotifyClient:
 
     def fetch_artist_albums(self, artist_uri, filter_albums=True):
         response = self.spotipy.artist_albums(artist_uri, album_type='album')
-        print(response)
         album_names = []
         album_uris = []
         for i in range(len(response['items'])):
@@ -31,15 +30,11 @@ class SpotifyClient:
             return album_names, album_uris
 
     def __filter_duplicated_albums(self, album_names, album_uris):
-        while any(tup[1] > 1 for tup in Counter(album_names).most_common()): # while there are some duplicated album names
+        while any(tup[1] > 1 for tup in Counter(album_names).most_common()):  # while duplicated album names exist
             duplicates_list = [list_duplicate_indices(album_names, item) for item in album_names]
             index_to_drop = next(duplicate[0] for duplicate in duplicates_list if len(duplicate) > 1)
-            print(duplicates_list)
-            print(index_to_drop)
             del album_names[index_to_drop]
             del album_uris[index_to_drop]
-        print("DEDU", album_names)
-        print("DEDU", album_uris)
         return album_names, album_uris
 
     def fetch_album_songs(self, album_uri, album_name):
