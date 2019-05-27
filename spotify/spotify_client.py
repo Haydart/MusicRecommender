@@ -46,30 +46,15 @@ class SpotifyClient:
         album_names_to_drop = [checked_album_name for checked_album_name in albums_names for album_name in
                                [album_name for album_name in albums_names] if
                                checked_album_name in album_name and checked_album_name is not album_name]
-
         album_indices_to_drop = [albums_names.index(album_name) for album_name in album_names_to_drop]
         album_uris_to_drop = [albums_uris[index] for index in album_indices_to_drop]
 
         for album_name in album_names_to_drop:
             albums_names.remove(album_name)
-
         for album_uri in album_uris_to_drop:
             albums_uris.remove(album_uri)
 
         return albums_names, albums_uris
-
-    # def fetch_album_songs(self, album_uri, album_name):
-    #     spotify_album = {'album': [], 'track_number': [], 'id': [], 'name': [], 'uri': []}
-    #     tracks = self.spotipy.album_tracks(album_uri)
-    #     print(tracks)
-    #
-    #     for n in range(len(tracks['items'])):  # for each song track
-    #         spotify_album['album'].append(album_name)  # append album name tracked via album_count
-    #         spotify_album['track_number'].append(tracks['items'][n]['track_number'])
-    #         spotify_album['id'].append(tracks['items'][n]['id'])
-    #         spotify_album['name'].append(tracks['items'][n]['name'])
-    #         spotify_album['uri'].append(tracks['items'][n]['uri'])
-    #     return spotify_album
 
     def fetch_albums_tracks(self, album_uri_list):
         if len(album_uri_list) > 20:
