@@ -2,7 +2,7 @@ import os
 import spotipy
 from spotipy.oauth2 import SpotifyClientCredentials
 from collections import Counter
-from .utils import list_duplicate_indices
+from utils.utils import list_duplicate_indices
 
 
 class SpotifyClient:
@@ -74,3 +74,8 @@ class SpotifyClient:
 
     def fetch_audio_features(self, track_uri_list):
         pass
+
+if __name__ == '__main__':
+    client = SpotifyClient()
+    print(client.fetch_artist_albums('spotify:artist:221Rd0FvVxMx7eCbWqjiKd'))
+
