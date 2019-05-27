@@ -1,5 +1,7 @@
 import pandas as pd
 from spotify.spotify_client import SpotifyClient
+import time
+import numpy as np
 
 artists_df = pd.read_csv("../output/every_noise_artists_output.csv")
 print(artists_df.head())
@@ -7,13 +9,21 @@ print(f'Overall artist-genre pairs: {len(artists_df.index)}')
 print(f'Unique artists: {len(artists_df["spotify_artist_id"].unique())}')
 
 client = SpotifyClient()
+result = []
+index = 0
 
-artist_ids = [artists_df.loc[artists_df['name'] == 'Disturbed'].iloc[0]['spotify_artist_id'],
-              artists_df.loc[artists_df['name'] == 'Avenged Sevenfold'].iloc[0]['spotify_artist_id'],
-              artists_df.loc[artists_df['name'] == 'Dream Theater'].iloc[0]['spotify_artist_id'],
-              artists_df.loc[artists_df['name'] == 'Saor'].iloc[0]['spotify_artist_id'],
-              artists_df.loc[artists_df['name'] == 'Mgła'].iloc[0]['spotify_artist_id']]
+for _, artist in artists_df[['name', 'spotify_artist_id']].iterrows():
+    index = index + 1
+    albums_names, albums_uris = client.fetch_artist_albums(artist['spotify_artist_id'])
 
-print(artist_ids)
-print(client.fetch_basic_artist_info(artist_ids))
-print(client.fetch_artist_albums(artist_ids))
+    for album_name, album_uri in zip(albums_names, albums_uris):
+        # print(artist['name'], artist['spotify_artist_id'], album_name, album_uri)
+        result.append([artist['name'], artist['spotify_artist_id'], album_name, album_uri])
+
+    if index % 1000 == 0:
+        print(f'ARTIST NUMBER {index}\t{time.ctime(int(time.time()))}')
+        result_nd = np.array(result)
+        result_df = pd.DataFrame(result_nd, columns=['name', 'artist uri', 'album name', 'album_uri'])
+        result = []
+        with open('../output/spotify_artists_albums_uri.csv', 'a') as file:
+            result_df.to_csv(file, header=False, index=False)
