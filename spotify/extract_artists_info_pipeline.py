@@ -14,10 +14,6 @@ artist_ids = [artists_df.loc[artists_df['name'] == 'Disturbed'].iloc[0]['spotify
               artists_df.loc[artists_df['name'] == 'Saor'].iloc[0]['spotify_artist_id'],
               artists_df.loc[artists_df['name'] == 'Mgła'].iloc[0]['spotify_artist_id']]
 
-print(f'artist id: {artist_ids[0]}')
+print(artist_ids)
 print(client.fetch_basic_artist_info(artist_ids))
-albums_names, albums_uris = client.fetch_artist_albums(artist_ids[0])
-albums_tracks = client.fetch_albums_tracks(albums_uris)
-print(albums_names)
-print(albums_uris)
-print(albums_tracks)
+print(client.fetch_artist_albums(artist_ids))

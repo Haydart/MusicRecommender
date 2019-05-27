@@ -38,7 +38,6 @@ class SpotifyClient:
         return albums_names, albums_uris
 
     def __filter_albums_with_keywords(self, albums_names, albums_uris):
-        print(albums_names)
         album_names_to_drop = [checked_album_name for checked_album_name in albums_names for unwanted_keyword in
                                [unwanted_keyword for unwanted_keyword in self.unwanted_album_name_keywords] if
                                unwanted_keyword in checked_album_name.lower()]
@@ -49,9 +48,11 @@ class SpotifyClient:
 
     def __drop_albums(self, album_names_to_drop, album_uris_to_drop, albums_names, albums_uris):
         for album_name in album_names_to_drop:
-            albums_names.remove(album_name)
+            if album_name in albums_names:
+                albums_names.remove(album_name)
         for album_uri in album_uris_to_drop:
-            albums_uris.remove(album_uri)
+            if album_uri in albums_uris:
+                albums_uris.remove(album_uri)
         return albums_names, albums_uris
 
     def __filter_subset_albums(self, albums_names, albums_uris):
