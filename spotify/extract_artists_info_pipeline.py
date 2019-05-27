@@ -16,7 +16,7 @@ artist_ids = [artists_df.loc[artists_df['name'] == 'Disturbed'].iloc[0]['spotify
 
 print(f'artist id: {artist_ids[0]}')
 print(client.fetch_basic_artist_info(artist_ids))
-albums_names, albums_uris = client.fetch_artist_albums(artist_ids[0], filter_duplicate_names=True)
+albums_names, albums_uris = client.fetch_artist_albums(artist_ids[0])
 albums_tracks = client.fetch_albums_tracks(albums_uris)
 print(albums_names)
 print(albums_uris)

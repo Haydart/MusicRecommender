@@ -12,35 +12,47 @@ class SpotifyClient:
         client_secret = os.environ['SPOTIFY_CLIENT_SECRET']
         client_credentials_manager = SpotifyClientCredentials(client_id=client_id, client_secret=client_secret)
         self.spotipy = spotipy.Spotify(client_credentials_manager=client_credentials_manager)
+        self.unwanted_album_name_keywords = ['live', 'remix', 'remaster', 'remastered']
 
     def fetch_basic_artist_info(self, artist_uris):
         return self.spotipy.artists(artist_uris)
 
-    def fetch_artist_albums(self, artist_uri, filter_duplicate_names=True, filter_subset_albums=True):
+    def fetch_artist_albums(self, artist_uri):
         response = self.spotipy.artist_albums(artist_uri, album_type='album')
-        album_names = []
-        album_uris = []
+        albums_names = []
+        albums_uris = []
         for i in range(len(response['items'])):
-            album_names.append(response['items'][i]['name'])
-            album_uris.append(response['items'][i]['uri'])
+            albums_names.append(response['items'][i]['name'])
+            albums_uris.append(response['items'][i]['uri'])
 
-        if filter_duplicate_names:
-            unique_album_names, unique_album_uris = self.__filter_duplicated_albums(album_names, album_uris)
+        albums_names, albums_uris = self.__filter_duplicated_albums(albums_names, albums_uris)
+        albums_names, albums_uris = self.__filter_albums_with_keywords(albums_names, albums_uris)
+        return self.__filter_subset_albums(albums_names, albums_uris)
 
-            if filter_subset_albums:
-                return self.__filter_subset_albums(unique_album_names, album_uris)
-            else:
-                return unique_album_names, unique_album_uris
-        else:
-            return album_names, album_uris
-
-    def __filter_duplicated_albums(self, album_names, album_uris):
-        while any(tup[1] > 1 for tup in Counter(album_names).most_common()):  # while duplicated album names exist
-            duplicates_list = [list_duplicate_indices(album_names, item) for item in album_names]
+    def __filter_duplicated_albums(self, albums_names, albums_uris):
+        while any(tup[1] > 1 for tup in Counter(albums_names).most_common()):  # while duplicated album names exist
+            duplicates_list = [list_duplicate_indices(albums_names, item) for item in albums_names]
             index_to_drop = next(duplicate[0] for duplicate in duplicates_list if len(duplicate) > 1)
-            del album_names[index_to_drop]
-            del album_uris[index_to_drop]
-        return album_names, album_uris
+            del albums_names[index_to_drop]
+            del albums_uris[index_to_drop]
+        return albums_names, albums_uris
+
+    def __filter_albums_with_keywords(self, albums_names, albums_uris):
+        print(albums_names)
+        album_names_to_drop = [checked_album_name for checked_album_name in albums_names for unwanted_keyword in
+                               [unwanted_keyword for unwanted_keyword in self.unwanted_album_name_keywords] if
+                               unwanted_keyword in checked_album_name.lower()]
+        album_indices_to_drop = [albums_names.index(album_name) for album_name in album_names_to_drop]
+        album_uris_to_drop = [albums_uris[index] for index in album_indices_to_drop]
+
+        return self.__drop_albums(album_names_to_drop, album_uris_to_drop, albums_names, albums_uris)
+
+    def __drop_albums(self, album_names_to_drop, album_uris_to_drop, albums_names, albums_uris):
+        for album_name in album_names_to_drop:
+            albums_names.remove(album_name)
+        for album_uri in album_uris_to_drop:
+            albums_uris.remove(album_uri)
+        return albums_names, albums_uris
 
     def __filter_subset_albums(self, albums_names, albums_uris):
         album_names_to_drop = [checked_album_name for checked_album_name in albums_names for album_name in
@@ -49,12 +61,7 @@ class SpotifyClient:
         album_indices_to_drop = [albums_names.index(album_name) for album_name in album_names_to_drop]
         album_uris_to_drop = [albums_uris[index] for index in album_indices_to_drop]
 
-        for album_name in album_names_to_drop:
-            albums_names.remove(album_name)
-        for album_uri in album_uris_to_drop:
-            albums_uris.remove(album_uri)
-
-        return albums_names, albums_uris
+        return self.__drop_albums(album_names_to_drop, album_uris_to_drop, albums_names, albums_uris)
 
     def fetch_albums_tracks(self, album_uri_list):
         if len(album_uri_list) > 20:
