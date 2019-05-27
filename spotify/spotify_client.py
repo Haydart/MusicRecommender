@@ -41,19 +41,15 @@ class SpotifyClient:
             spotify_album['uri'].append(tracks['items'][n]['uri'])
         return spotify_album
 
+    def fetch_albums_data(self, album_uri_list, filter_albums=True, filter_tracks=True):
+        if len(album_uri_list) > 20:
+            raise ConnectionRefusedError('Cannot process more than 20 albums at once')
+        response = self.spotipy.albums(album_uri_list)
+        names_to_uris = [{album['name']: album['uri']} for album in response['albums']]
+
+
+        tracks = [[{track['name'] : track['uri']} for track in album['tracks']['items']] for album in response['albums']]
+        return names_to_uris, tracks
+
     def fetch_audio_features(self, track_uri_list):
         pass
-
-    def __chunk_spotify_track_uri_list(self, track_uri_list, limit=50):
-        for i in range(0, len(track_uri_list), limit):
-            yield track_uri_list[i:i + limit]
-
-    def get_albums_by_artist_from_list(self, artist_names):
-        artists_album_names = {}
-        artists_album_uris = {}
-        for artist in artist_names:
-            album_names, album_uris = self.fetch_artist_albums(artist)
-            if album_names is not None and album_uris is not None:
-                artists_album_names[artist] = album_names
-                artists_album_uris[artist] = album_uris
-        return artists_album_names, artists_album_uris

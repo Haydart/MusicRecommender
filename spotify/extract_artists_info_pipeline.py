@@ -1,7 +1,6 @@
 import pandas as pd
 from spotify.spotify_client import SpotifyClient
 
-
 artists_df = pd.read_csv("../output/artists_output.csv")
 print(artists_df.head())
 print(f'Overall artist-genre pairs: {len(artists_df.index)}')
@@ -15,4 +14,7 @@ print(client.fetch_basic_artist_info(artist_id))
 album_names, album_uris = client.fetch_artist_albums(artist_id)
 print(album_names)
 print(album_uris)
-print(client.fetch_album_songs(album_uris[2], album_names[2]))
+# print(client.fetch_album_songs(album_uris[2], album_names[2]))
+print("fetching albums info")
+print(client.fetch_albums_data(album_uris, filter_albums=True, filter_tracks=True))
+
