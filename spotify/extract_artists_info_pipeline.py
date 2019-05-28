@@ -4,9 +4,9 @@ import time
 import numpy as np
 
 artists_df = pd.read_csv("../output/every_noise_artists_output.csv")
-print(artists_df.head())
-print(f'Overall artist-genre pairs: {len(artists_df.index)}')
-print(f'Unique artists: {len(artists_df["spotify_artist_id"].unique())}')
+print(f'{len(artists_df)} artists before deduplication')
+artists_df = artists_df.drop_duplicates(subset=['spotify_artist_id'], keep=False)
+print(f'{len(artists_df)} artists after deduplication')
 
 client = SpotifyClient()
 result = []
@@ -21,7 +21,7 @@ for _, artist in artists_df[['name', 'spotify_artist_id']].iterrows():
         result.append([artist['name'], artist['spotify_artist_id'], album_name, album_uri])
 
     if index % 1000 == 0:
-        print(f'ARTIST NUMBER {index}\t{time.ctime(int(time.time()))}')
+        print(f'DONE {index} ARTISTS\t{time.ctime(int(time.time()))}')
         result_nd = np.array(result)
         result_df = pd.DataFrame(result_nd, columns=['name', 'artist uri', 'album name', 'album_uri'])
         result = []
