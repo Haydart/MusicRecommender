@@ -5,7 +5,7 @@ import numpy as np
 
 artists_df = pd.read_csv("../output/every_noise_artists_output.csv")
 print(f'{len(artists_df)} artists before deduplication')
-artists_df = artists_df.drop_duplicates(subset=['spotify_artist_id'], keep=False)
+artists_df = artists_df.drop_duplicates(subset=['spotify_artist_id'])
 print(f'{len(artists_df)} artists after deduplication')
 
 client = SpotifyClient()
