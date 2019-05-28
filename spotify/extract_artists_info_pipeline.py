@@ -25,5 +25,5 @@ for _, artist in artists_df[['name', 'spotify_artist_id']].iterrows():
         result_nd = np.array(result)
         result_df = pd.DataFrame(result_nd, columns=['name', 'artist uri', 'album name', 'album_uri'])
         result = []
-        with open('../output/spotify_artists_albums_uri.csv', 'a') as file:
-            result_df.to_csv(file, header=False, index=False)
+        with open('../output/spotify_artists_albums_uri.csv', 'a', encoding='utf-8', newline='') as file:
+            result_df.to_csv(file, header=False, index=False, encoding='utf-8', line_terminator=None)
