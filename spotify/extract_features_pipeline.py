@@ -55,4 +55,5 @@ for lower_index in range(0, len(tracks_df.index), track_count_limit):
         result = []
         with open('../output/spotify_artists_albums_tracks_features_output_full.csv', 'a', encoding='utf-8') as file:
             result_df.to_csv(file, header=False, index=False, encoding='utf-8')
-
+        with open('../output/spotify_artists_albums_tracks_features_output.csv', 'a', encoding='utf-8') as file:
+            result_df[partial_column_names].to_csv(file, header=False, index=False, encoding='utf-8')
