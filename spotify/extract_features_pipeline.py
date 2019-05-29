@@ -18,7 +18,8 @@ tracks_uris_nd = tracks_df['track uri'].values
 track_count_limit = 50
 client = SpotifyClient()
 result = []
-batch_index = 0
+start_batch_index = 16000
+batch_index = start_batch_index
 iterations_count = int(len(tracks_df.index) / track_count_limit)
 
 added_column_names = ['danceability', 'energy', 'loudness', 'speechiness', 'acousticness', 'instrumentalness',
@@ -26,18 +27,15 @@ added_column_names = ['danceability', 'energy', 'loudness', 'speechiness', 'acou
 full_column_names = tracks_df.columns.tolist() + added_column_names
 partial_column_names = [name for name in full_column_names if name not in ['artist uri', 'album uri', 'track uri']]
 
-print(','.join(full_column_names))
-print(','.join(partial_column_names))
-
-for lower_index in range(0, len(tracks_df.index), track_count_limit):
+for lower_index in range(start_batch_index, len(tracks_df.index), track_count_limit):
     batch_index = batch_index + 1
 
-    artists_names_batch = artists_names_nd[lower_index:min(lower_index + track_count_limit, len(tracks_df.index)), ]
-    artists_uris_batch = artists_uris_nd[lower_index:min(lower_index + track_count_limit, len(tracks_df.index)), ]
-    albums_names_batch = albums_names_nd[lower_index:min(lower_index + track_count_limit, len(tracks_df.index)), ]
-    albums_uris_batch = albums_uris_nd[lower_index:min(lower_index + track_count_limit, len(tracks_df.index)), ]
-    tracks_names_batch = tracks_names_nd[lower_index:min(lower_index + track_count_limit, len(tracks_df.index)), ]
-    tracks_uris_batch = tracks_uris_nd[lower_index:min(lower_index + track_count_limit, len(tracks_df.index)), ]
+    artists_names_batch = artists_names_nd[lower_index:lower_index + track_count_limit, ]
+    artists_uris_batch = artists_uris_nd[lower_index:lower_index + track_count_limit, ]
+    albums_names_batch = albums_names_nd[lower_index:lower_index + track_count_limit, ]
+    albums_uris_batch = albums_uris_nd[lower_index:lower_index + track_count_limit, ]
+    tracks_names_batch = tracks_names_nd[lower_index:lower_index + track_count_limit, ]
+    tracks_uris_batch = tracks_uris_nd[lower_index:lower_index + track_count_limit, ]
 
     tracks_features = client.fetch_audio_features(tracks_uris_batch)
 
@@ -45,7 +43,7 @@ for lower_index in range(0, len(tracks_df.index), track_count_limit):
         result.append(
             [artists_names_batch[track_index], artists_uris_batch[track_index], albums_names_batch[track_index],
              albums_uris_batch[track_index], tracks_names_batch[track_index],
-             tracks_uris_batch[track_index]] + list(track_features)
+             tracks_uris_batch[track_index]] + track_features
         )
 
     if batch_index % 1000 == 0:
