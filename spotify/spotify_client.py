@@ -65,17 +65,19 @@ class SpotifyClient:
         return self.__drop_albums(album_names_to_drop, album_uris_to_drop, albums_names, albums_uris)
 
     def fetch_albums_tracks(self, album_uri_list):
-        if len(album_uri_list) > 20:
-            raise ConnectionRefusedError('Cannot process more than 20 albums at once')
         response = self.spotipy.albums(album_uri_list)
-        albums = [(album['name'], album['uri']) for album in response['albums']]
         tracks = [[(track['name'], track['uri']) for track in album['tracks']['items']] for album in response['albums']]
         return tracks
 
     def fetch_audio_features(self, track_uri_list):
-        pass
+        response = self.spotipy.audio_features(track_uri_list)
+        features = [(track['danceability'], track['energy'], track['loudness'], track['speechiness'],
+                     track['acousticness'], track['instrumentalness'], track['liveness'], track['valence'],
+                     track['tempo'], track['duration_ms']) for track in response]
+        return features
+
 
 if __name__ == '__main__':
     client = SpotifyClient()
     print(client.fetch_artist_albums('spotify:artist:221Rd0FvVxMx7eCbWqjiKd'))
-
+    print(client.fetch_audio_features(['spotify:track:1IlcTlRl6t59ZsY4spAZus', 'spotify:track:0O8hrovSEOyFnHDZiMCeml']))
