@@ -5,7 +5,7 @@ import numpy as np
 
 tracks_df = pd.read_csv("../output/spotify_artists_albums_tracks_output_full.csv")
 print(f'{len(tracks_df)} tracks before deduplication')
-tracks_df = tracks_df.drop_duplicates(subset=['album uri'])
+tracks_df = tracks_df.drop_duplicates(subset=['track uri'])
 print(f'{len(tracks_df)} tracks after deduplication')
 
 artists_names_nd = tracks_df['artist name'].values
@@ -22,7 +22,12 @@ batch_index = 0
 iterations_count = int(len(tracks_df.index) / track_count_limit)
 
 added_column_names = ['danceability', 'energy', 'loudness', 'speechiness', 'acousticness', 'instrumentalness',
-                      'liveness', 'valence', 'tempo', 'duration_ms']
+                      'liveness', 'valence', 'tempo', 'duration']
+full_column_names = tracks_df.columns.tolist() + added_column_names
+partial_column_names = [name for name in full_column_names if name not in ['artist uri', 'album uri', 'track uri']]
+
+print(','.join(full_column_names))
+print(','.join(partial_column_names))
 
 for lower_index in range(0, len(tracks_df.index), track_count_limit):
     batch_index = batch_index + 1
@@ -35,4 +40,19 @@ for lower_index in range(0, len(tracks_df.index), track_count_limit):
     tracks_uris_batch = tracks_uris_nd[lower_index:min(lower_index + track_count_limit, len(tracks_df.index)), ]
 
     tracks_features = client.fetch_audio_features(tracks_uris_batch)
+
+    for track_index, track_features in enumerate(tracks_features):
+        result.append(
+            [artists_names_batch[track_index], artists_uris_batch[track_index], albums_names_batch[track_index],
+             albums_uris_batch[track_index], tracks_names_batch[track_index],
+             tracks_uris_batch[track_index]] + list(track_features)
+        )
+
+    if batch_index % 1000 == 0:
+        print(f'DONE {batch_index} OUT OF {iterations_count} TRACK BATCHES\t{time.ctime(int(time.time()))}')
+        result_nd = np.array(result)
+        result_df = pd.DataFrame(result_nd, columns=full_column_names)
+        result = []
+        with open('../output/spotify_artists_albums_tracks_features_output_full.csv', 'a', encoding='utf-8') as file:
+            result_df.to_csv(file, header=False, index=False, encoding='utf-8')
 
