@@ -11,7 +11,7 @@ print(f'{len(albums_df)} albums after deduplication')
 album_count_limit = 20
 client = SpotifyClient()
 result = []
-batch_index = 7999
+batch_index = 0
 iterations_count = int(len(albums_df.index) / album_count_limit)
 
 albums_uris_nd = albums_df['album_uri'].values
