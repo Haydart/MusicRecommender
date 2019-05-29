@@ -33,3 +33,6 @@ for lower_index in range(0, len(tracks_df.index), track_count_limit):
     albums_uris_batch = albums_uris_nd[lower_index:min(lower_index + track_count_limit, len(tracks_df.index)), ]
     tracks_names_batch = tracks_names_nd[lower_index:min(lower_index + track_count_limit, len(tracks_df.index)), ]
     tracks_uris_batch = tracks_uris_nd[lower_index:min(lower_index + track_count_limit, len(tracks_df.index)), ]
+
+    tracks_features = client.fetch_audio_features(tracks_uris_batch)
+
