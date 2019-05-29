@@ -13,6 +13,9 @@ class SpotifyClient:
         client_credentials_manager = SpotifyClientCredentials(client_id=client_id, client_secret=client_secret)
         self.spotipy = spotipy.Spotify(client_credentials_manager=client_credentials_manager)
         self.unwanted_album_name_keywords = ['live', 'remix', 'remaster', 'remastered']
+        self.feature_names = ['danceability', 'energy', 'loudness', 'speechiness', 'acousticness', 'instrumentalness',
+                              'liveness', 'valence', 'tempo', 'duration_ms']
+        self.empty_features = [None] * len(self.feature_names)
 
     def fetch_basic_artist_info(self, artist_uris):
         return self.spotipy.artists(artist_uris)
@@ -71,10 +74,8 @@ class SpotifyClient:
 
     def fetch_audio_features(self, track_uri_list):
         response = self.spotipy.audio_features(track_uri_list)
-        features = [(track['danceability'], track['energy'], track['loudness'], track['speechiness'],
-                     track['acousticness'], track['instrumentalness'], track['liveness'], track['valence'],
-                     track['tempo'], track['duration_ms']) for track in response]
-        return features
+        return ([track[feature_name] for feature_name in self.feature_names] if track else self.empty_features
+                for track in response)
 
 
 if __name__ == '__main__':
