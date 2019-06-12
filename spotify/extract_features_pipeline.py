@@ -18,7 +18,7 @@ tracks_uris_nd = tracks_df['track uri'].values
 track_count_limit = 50
 client = SpotifyClient()
 result = []
-start_batch_index = 18000
+start_batch_index = 0
 batch_index = start_batch_index
 iterations_count = int(len(tracks_df.index) / track_count_limit)
 
@@ -52,12 +52,9 @@ for lower_index in range(start_batch_index, len(tracks_df.index), track_count_li
                 print(f'DONE {batch_index} OUT OF {iterations_count} TRACK BATCHES\t{time.ctime(int(time.time()))}')
                 result_nd = np.array(result)
                 result_df = pd.DataFrame(result_nd, columns=full_column_names)
-                result = []
-                with open('../output/spotify_artists_albums_tracks_features_output_full.csv', 'a',
-                          encoding='utf-8') as file:
+                with open(f'../temp/spotify_artists_albums_tracks_features_output_full_{batch_index}.csv', 'a', encoding='utf-8') as file:
                     result_df.to_csv(file, header=False, index=False, encoding='utf-8')
-                with open('../output/spotify_artists_albums_tracks_features_output.csv', 'a', encoding='utf-8') as file:
-                    result_df[partial_column_names].to_csv(file, header=False, index=False, encoding='utf-8')
+                result = []
         except:
             continue
         break

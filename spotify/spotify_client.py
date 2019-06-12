@@ -80,5 +80,5 @@ class SpotifyClient:
 
 if __name__ == '__main__':
     client = SpotifyClient()
-    print(client.fetch_artist_albums('spotify:artist:221Rd0FvVxMx7eCbWqjiKd'))
-    print(client.fetch_audio_features(['spotify:track:1IlcTlRl6t59ZsY4spAZus', 'spotify:track:0O8hrovSEOyFnHDZiMCeml']))
+    # print(client.fetch_artist_albums('spotify:artist:221Rd0FvVxMx7eCbWqjiKd'))
+    print([it for it in client.fetch_audio_features(['spotify:track:5XQGmfyiomQa6GYrKZ3cNF', 'spotify:track:5Bzk53xgCAl9HSi0tZZzJv'])])
